@@ -27,10 +27,19 @@
 (add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
 
 (use-package evil
-  :ensure t ;; install the evil package if not installed
-  :init ;; tweak evil's configuration before loading it
-  :config ;; tweak evil after loading it
-  (evil-mode))
+  :ensure t
+  :init
+  :config
+  (evil-mode 1))
+
+(use-package powerline
+  :ensure t
+  :init
+  :config
+  (powerline-default-theme))
+
+;; chamfer, contour, curve, rounded, roundstub, slant, wave, zigzag, and ni
+(setq powerline-default-separator nil)
 
 (use-package company
   :commands (company-mode company-indent-or-complete-common company-tng)
@@ -65,11 +74,16 @@
   (helm-mode 1)
   (setq helm-autoresize-mode t)
   (setq helm-buffer-max-length 40)
-  (global-set-key (kbd "M-x") #'helm-M-x)
+  (global-set-key (kbd "M-x") 'helm-M-x)
   (global-set-key (kbd "C-x d") 'helm-find-files)
   (global-set-key (kbd "C-x f") 'helm-find-files)
   (define-key helm-map (kbd "S-SPC") 'helm-toggle-visible-mark)
   (define-key helm-find-files-map (kbd "C-k") 'helm-find-files-up-one-level))
+
+(setq history-length 100)
+(put 'minibuffer-history 'history-length 50)
+(put 'evil-ex-history 'history-length 50)
+(put 'kill-ring 'history-length 25)
 
 (use-package evil-matchit
   :ensure t
@@ -125,6 +139,52 @@
 ;; (add-hook 'after-save-hook 'magit-after-save-refresh-status t)
 (use-package general)
 
+(defun helm-ff-directory-files (directory)
+  "List contents of DIRECTORY.
+Argument FULL mean absolute path.
+It is same as `directory-files' but always returns the
+dotted filename '.' and '..' even on root directories in Windows
+systems."
+  (setq directory (file-name-as-directory
+                   (expand-file-name directory)))
+  (let* (file-error
+         (ls   (condition-case err
+                   (helm-list-directory directory)
+                 ;; Handle file-error from here for Windows
+                 ;; because predicates like `file-readable-p' and friends
+                 ;; seem broken on emacs for Windows systems (always returns t).
+                 ;; This should never be called on GNU/Linux/Unix
+                 ;; as the error is properly intercepted in
+                 ;; `helm-find-files-get-candidates' by `file-readable-p'.
+                 (file-error
+                  (prog1
+                      (list (format "%s:%s"
+                                    (car err)
+                                    (mapconcat 'identity (cdr err) " ")))
+                    (setq file-error t)))))
+         (dot  (concat directory "."))
+         (dot2 (concat directory "..")))
+    (puthash directory (+ (length ls) 2) helm-ff--directory-files-hash)
+    ;; (append (and (not file-error) (list dot dot2)) ls)
+    ;; return the files only, excluding the "." and ".."
+    ls
+    ))
+
+(defun create-tags (dir-name)
+    "Create tags file."
+    (interactive "Directory: ")
+    (shell-command
+     (format "%s -f TAGS -e -R %s" "/usr/local/bin/ctags" (directory-file-name dir-name)))
+    )
+
+(define-key evil-normal-state-map (kbd "gf")
+  (lambda () (interactive) (find-tag (find-tag-default-as-regexp))))
+
+(define-key evil-normal-state-map (kbd "gb") 'pop-tag-mark)
+
+(define-key evil-normal-state-map (kbd "gn")
+  (lambda () (interactive) (find-tag last-tag t)))
+
 (defun iterm-focus ()
   (interactive)
   (do-applescript
@@ -137,12 +197,30 @@
   (let* ((iterm-app-path "/Applications/iTerm.app"))
     (shell-command (concat "open -a " iterm-app-path " ."))))
 
-(general-define-key
- :states '(normal visual insert emacs)
- :prefix "`"
- "t" '(iterm-focus :which-key "focus iterm")
- "d" '(open-dir-in-iterm :which-key "open dir in iterm")
- )
+;;(general-define-key
+;; :states '(normal visual insert emacs)
+;; :prefix "`"
+;; "t" '(iterm-focus :which-key "focus iterm")
+;; "d" '(open-dir-in-iterm :which-key "open dir in iterm")
+;; )
+
+;;; esc quits
+(defun minibuffer-keyboard-quit ()
+  "Abort recursive edit.
+In Delete Selection mode, if the mark is active, just deactivate it;
+then it takes a second \\[keyboard-quit] to abort the minibuffer."
+  (interactive)
+  (if (and delete-selection-mode transient-mark-mode mark-active)
+      (setq deactivate-mark  t)
+    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+    (abort-recursive-edit)))
+(define-key evil-normal-state-map [escape] 'keyboard-quit)
+(define-key evil-visual-state-map [escape] 'keyboard-quit)
+(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)

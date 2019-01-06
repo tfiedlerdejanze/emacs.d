@@ -20,7 +20,7 @@
  '(org-agenda-files (quote ("~/documentation.org")))
  '(package-selected-packages
    (quote
-    (dockerfile-mode alchemist format-all dashboard auto-org-md espresso-theme evil-matchit leuven-theme github-theme exec-path-from-shell helm-projectile use-package projectile helm evil-visual-mark-mode)))
+    (powerline dockerfile-mode alchemist format-all dashboard auto-org-md espresso-theme evil-matchit leuven-theme github-theme exec-path-from-shell helm-projectile use-package projectile helm evil-visual-mark-mode)))
  '(pdf-view-midnight-colors (quote ("#969896" . "#f8eec7")))
  '(vc-annotate-background "#b0cde7")
  '(vc-annotate-color-map
