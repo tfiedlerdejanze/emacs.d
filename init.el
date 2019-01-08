@@ -68,207 +68,6 @@
   :config
   (projectile-mode +1))
 
-(require 'package)
-
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl
-    (warn "\
-          Your version of Emacs does not support SSL connections,
-          which is unsafe because it allows man-in-the-middle attacks.
-          There are two things you can do about this warning:
-          1. Install an Emacs version that does support SSL and be safe.
-          2. Remove this warning from your init file so you won't see it again."))
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))
-  (when (< emacs-major-version 24)
-    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
-(package-initialize)
-
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-
-(eval-when-compile
-  (require 'use-package))
-
-
-(use-package dockerfile-mode)
-(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
-
-(use-package evil
-  :ensure t
-  :init
-  :config
-  (evil-mode 1))
-
-(use-package powerline
-  :ensure t
-  :init
-  :config
-  (powerline-default-theme))
-
-;; chamfer, contour, curve, rounded, roundstub, slant, wave, zigzag, and ni
-(setq powerline-default-separator nil)
-
-(use-package company
-  :commands (company-mode company-indent-or-complete-common company-tng)
-  :init
-  (dolist (hook '(emacs-lisp-mode-hook
-                  c-mode-common-hook))
-    (add-hook hook
-              #'(lambda ()
-                  (local-set-key (kbd "<tab>")
-                                 #'company-indent-or-complete-common))))
-  :config
-  :init)
-
-(use-package org)
-(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(setq org-todo-keywords
-      '((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
-
-(use-package projectile
-  :init
-  (setq projectile-keymap-prefix (kbd "C-c p"))
-  (setq projectile-enable-caching t)
-  :config
-  (projectile-mode +1))
-
-(require 'package)
-
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl
-    (warn "\
-          Your version of Emacs does not support SSL connections,
-          which is unsafe because it allows man-in-the-middle attacks.
-          There are two things you can do about this warning:
-          1. Install an Emacs version that does support SSL and be safe.
-          2. Remove this warning from your init file so you won't see it again."))
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))
-  (when (< emacs-major-version 24)
-    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
-(package-initialize)
-
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-
-(eval-when-compile
-  (require 'use-package))
-
-
-(use-package dockerfile-mode)
-(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
-
-(use-package evil
-  :ensure t
-  :init
-  :config
-  (evil-mode 1))
-
-(use-package powerline
-  :ensure t
-  :init
-  :config
-  (powerline-default-theme))
-
-;; chamfer, contour, curve, rounded, roundstub, slant, wave, zigzag, and ni
-(setq powerline-default-separator nil)
-
-(use-package company
-  :commands (company-mode company-indent-or-complete-common company-tng)
-  :init
-  (dolist (hook '(emacs-lisp-mode-hook
-                  c-mode-common-hook))
-    (add-hook hook
-              #'(lambda ()
-                  (local-set-key (kbd "<tab>")
-                                 #'company-indent-or-complete-common))))
-  :config
-  :init)
-
-(use-package org)
-(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(setq org-todo-keywords
-      '((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
-
-(use-package projectile
-  :init
-  (setq projectile-keymap-prefix (kbd "C-c p"))
-  (setq projectile-enable-caching t)
-  :config
-  (projectile-mode +1))
-
-(require 'package)
-
-(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
-                    (not (gnutls-available-p))))
-       (proto (if no-ssl "http" "https")))
-  (when no-ssl
-    (warn "\
-          Your version of Emacs does not support SSL connections,
-          which is unsafe because it allows man-in-the-middle attacks.
-          There are two things you can do about this warning:
-          1. Install an Emacs version that does support SSL and be safe.
-          2. Remove this warning from your init file so you won't see it again."))
-  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t)
-  (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))
-  (when (< emacs-major-version 24)
-    (add-to-list 'package-archives (cons "gnu" (concat proto "://elpa.gnu.org/packages/")))))
-(package-initialize)
-
-(when (memq window-system '(mac ns x))
-  (exec-path-from-shell-initialize))
-
-(eval-when-compile
-  (require 'use-package))
-
-
-(use-package dockerfile-mode)
-(add-to-list 'auto-mode-alist '("Dockerfile\\'" . dockerfile-mode))
-
-(use-package evil
-  :ensure t
-  :init
-  :config
-  (evil-mode 1))
-
-(use-package powerline
-  :ensure t
-  :init
-  :config
-  (powerline-default-theme))
-
-;; chamfer, contour, curve, rounded, roundstub, slant, wave, zigzag, and ni
-(setq powerline-default-separator nil)
-
-(use-package company
-  :commands (company-mode company-indent-or-complete-common company-tng)
-  :init
-  (dolist (hook '(emacs-lisp-mode-hook
-                  c-mode-common-hook))
-    (add-hook hook
-              #'(lambda ()
-                  (local-set-key (kbd "<tab>")
-                                 #'company-indent-or-complete-common))))
-  :config
-  :init)
-
-(use-package org)
-(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(setq org-todo-keywords
-      '((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
-
-(use-package projectile
-  :init
-  (setq projectile-keymap-prefix (kbd "C-c p"))
-  (setq projectile-enable-caching t)
-  :config
-  (projectile-mode +1))
-
 (defun run-projectile-invalidate-cache (&rest _args)
   ;; We ignore the args to `magit-checkout'.
   (projectile-invalidate-cache nil))
@@ -303,17 +102,19 @@
   :config
   (global-evil-matchit-mode 1))
 
-(use-package elixir-mode)
-(use-package alchemist)
-
 (use-package js2-mode)
 (use-package xref-js2)
-(use-package rjsx-mode)
+(use-package rjsx-mode
+             :ensure t
+             :config
+    (define-key js2-mode-map (kbd "M-.") nil))
 
 ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
 (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
-(define-key js2-mode-map (kbd "M-.") nil)
+
+(use-package elixir-mode)
+(use-package alchemist)
 
 (add-hook 'js2-mode-hook (lambda ()
   (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
@@ -396,34 +197,19 @@ systems."
     ls
     ))
 
-(defun build-ctags ()
-  (interactive)
-  (message "building project tags")
-  (let ((root (projectile-project-root)))
-    (shell-command (concat "ctags -e -R --extra=+fq --exclude=db --exclude=test --exclude=.git --exclude=public -f " root "TAGS " root)))
-  (visit-project-tags)
-  (message "tags built successfully"))
+;;(defun build-ctags ()
+;;  (interactive)
+;;  (message "building project tags")
+;;  (let ((root (projectile-project-root)))
+;;    (shell-command (concat "ctags -e -R --extra=+fq --exclude=db --exclude=test --exclude=.git --exclude=public -f " root "TAGS " root)))
+;;  (visit-project-tags)
+;;  (message "tags built successfully"))
 
-(defun visit-project-tags ()
-  (interactive)
-  (let ((tags-file (concat (projectile-project-root) "TAGS")))
-    (visit-tags-table tags-file)
-    (message (concat "Loaded " tags-file))))
-
-;;(defun create-tags (dir-name)
-;;    "Create tags file."
-;;    (interactive "Directory: ")
-;;    (shell-command
-;;     (format "%s -f TAGS -e -R %s" "/usr/local/bin/ctags" (directory-file-name dir-name)))
-;;    )
-
-(defun my-find-tag ()
-  (interactive)
-  (if (file-exists-p (concat (projectile-project-root) "TAGS"))
-      (visit-project-tags)
-    (build-ctags))
-  (etags-select-find-tag-at-point))
-
+;;(defun visit-project-tags ()
+;;  (interactive)
+;;  (let ((tags-file (concat (projectile-project-root) "TAGS")))
+;;    (visit-tags-table tags-file)
+;;    (message (concat "Loaded " tags-file))))
 
 (define-key evil-normal-state-map (kbd "gf")
   (lambda () (interactive) (find-tag (find-tag-default))))
@@ -433,17 +219,17 @@ systems."
 (define-key evil-normal-state-map (kbd "gn")
   (lambda () (interactive) (find-tag last-tag t)))
 
-(defun iterm-focus ()
-  (interactive)
-  (do-applescript
-   " do shell script \"open -a iTerm\"\n"
-   ))
-
-(defun open-dir-in-iterm ()
-  "Open the current directory of the buffer in iTerm."
-  (interactive)
-  (let* ((iterm-app-path "/Applications/iTerm.app"))
-    (shell-command (concat "open -a " iterm-app-path " ."))))
+;;(defun iterm-focus ()
+;;  (interactive)
+;;  (do-applescript
+;;   " do shell script \"open -a iTerm\"\n"
+;;   ))
+;;
+;;(defun open-dir-in-iterm ()
+;;  "Open the current directory of the buffer in iTerm."
+;;  (interactive)
+;;  (let* ((iterm-app-path "/Applications/iTerm.app"))
+;;    (shell-command (concat "open -a " iterm-app-path " ."))))
 
 ;;(general-define-key
 ;; :states '(normal visual insert emacs)
