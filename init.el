@@ -45,16 +45,19 @@
 (setq powerline-default-separator nil)
 
 (use-package company
-  :commands (company-mode company-indent-or-complete-common company-tng)
-  :init
-  (dolist (hook '(emacs-lisp-mode-hook
-                  c-mode-common-hook))
-    (add-hook hook
-              #'(lambda ()
-                  (local-set-key (kbd "<tab>")
-                                 #'company-indent-or-complete-common))))
+  :ensure t
+  :defer t
+  :init (global-company-mode)
   :config
-  :init)
+  (progn
+    ;; Use Company for completion
+    (bind-key [remap completion-at-point] #'company-complete company-mode-map)
+
+    (setq company-tooltip-align-annotations t
+          ;; Easy navigation to candidates with M-<n>
+          company-show-numbers t)
+    (setq company-dabbrev-downcase nil))
+  :diminish company-mode)
 
 (use-package org)
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
@@ -77,9 +80,6 @@
 (advice-add 'magit-branch-and-checkout ; This is `b c'.
             :after #'run-projectile-invalidate-cache)
 
-(use-package helm-projectile)
-(helm-projectile-on)
-
 (use-package helm
   :ensure t
   :config
@@ -91,6 +91,9 @@
   (global-set-key (kbd "C-x f") 'helm-find-files)
   (define-key helm-map (kbd "S-SPC") 'helm-toggle-visible-mark)
   (define-key helm-find-files-map (kbd "C-k") 'helm-find-files-up-one-level))
+
+(use-package helm-projectile)
+(helm-projectile-on)
 
 (setq history-length 100)
 (put 'minibuffer-history 'history-length 50)
