@@ -41,7 +41,7 @@
   :config
   (powerline-default-theme))
 
-;; chamfer, contour, curve, rounded, roundstub, slant, wave, zigzag, and ni
+;; chamfer, contour, curve, rounded, roundstub, slant, wave, zigzag, and nil
 (setq powerline-default-separator nil)
 
 (use-package company
@@ -79,6 +79,10 @@
             :after #'run-projectile-invalidate-cache)
 (advice-add 'magit-branch-and-checkout ; This is `b c'.
             :after #'run-projectile-invalidate-cache)
+(use-package rg
+  :init
+  :config
+(rg-enable-default-bindings))
 
 (use-package helm
   :ensure t
@@ -94,6 +98,21 @@
 
 (use-package helm-projectile)
 (helm-projectile-on)
+
+(use-package elixir-mode)
+(use-package alchemist)
+
+(use-package dashboard
+  :ensure t
+  :diminish dashboard-mode
+  :config
+  ;; (setq dashboard-banner-logo-title ";; Happy Hacking")
+  (setq dashboard-startup-banner 1)
+  (setq dashboard-items '((projects . 10)
+                          (bookmarks . 10)
+                          (agenda . 5)))
+  (dashboard-setup-startup-hook))
+
 
 (setq history-length 100)
 (put 'minibuffer-history 'history-length 50)
@@ -112,30 +131,17 @@
              :config
     (define-key js2-mode-map (kbd "M-.") nil))
 
-;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode))
+;; (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-hook 'js2-mode-hook (lambda () (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
 (add-hook 'js2-mode-hook #'js2-imenu-extras-mode)
 
-(use-package elixir-mode)
-(use-package alchemist)
-
-(add-hook 'js2-mode-hook (lambda ()
-  (add-hook 'xref-backend-functions #'xref-js2-xref-backend nil t)))
-
-(use-package dashboard
-  :ensure t
-  :diminish dashboard-mode
-  :config
-  ;; (setq dashboard-banner-logo-title ";; Happy Hacking")
-  (setq dashboard-startup-banner 1)
-  (setq dashboard-items '((recents . 10)
-                          (projects . 10)
-                          (agenda . 5)
-                          (bookmarks . 10)))
-  (dashboard-setup-startup-hook))
+(use-package whitespace)
+(setq whitespace-line-column 80) ;; limit line length
+(setq whitespace-style '(face lines-tail))
+(add-hook 'prog-mode-hook 'whitespace-mode)
 
 (setq ring-bell-function 'ignore)
-(setq-default fill-column 80)
 (global-visual-line-mode t)
 (global-evil-matchit-mode 1)
 (global-company-mode 1)
@@ -169,51 +175,6 @@
 ;; (add-hook 'after-save-hook 'magit-after-save-refresh-status t)
 (use-package general)
 
-(defun helm-ff-directory-files (directory)
-  "List contents of DIRECTORY.
-Argument FULL mean absolute path.
-It is same as `directory-files' but always returns the
-dotted filename '.' and '..' even on root directories in Windows
-systems."
-  (setq directory (file-name-as-directory
-                   (expand-file-name directory)))
-  (let* (file-error
-         (ls   (condition-case err
-                   (helm-list-directory directory)
-                 ;; Handle file-error from here for Windows
-                 ;; because predicates like `file-readable-p' and friends
-                 ;; seem broken on emacs for Windows systems (always returns t).
-                 ;; This should never be called on GNU/Linux/Unix
-                 ;; as the error is properly intercepted in
-                 ;; `helm-find-files-get-candidates' by `file-readable-p'.
-                 (file-error
-                  (prog1
-                      (list (format "%s:%s"
-                                    (car err)
-                                    (mapconcat 'identity (cdr err) " ")))
-                    (setq file-error t)))))
-         (dot  (concat directory "."))
-         (dot2 (concat directory "..")))
-    (puthash directory (+ (length ls) 2) helm-ff--directory-files-hash)
-    ;; (append (and (not file-error) (list dot dot2)) ls)
-    ;; return the files only, excluding the "." and ".."
-    ls
-    ))
-
-;;(defun build-ctags ()
-;;  (interactive)
-;;  (message "building project tags")
-;;  (let ((root (projectile-project-root)))
-;;    (shell-command (concat "ctags -e -R --extra=+fq --exclude=db --exclude=test --exclude=.git --exclude=public -f " root "TAGS " root)))
-;;  (visit-project-tags)
-;;  (message "tags built successfully"))
-
-;;(defun visit-project-tags ()
-;;  (interactive)
-;;  (let ((tags-file (concat (projectile-project-root) "TAGS")))
-;;    (visit-tags-table tags-file)
-;;    (message (concat "Loaded " tags-file))))
-
 (define-key evil-normal-state-map (kbd "gf")
   (lambda () (interactive) (find-tag (find-tag-default))))
 
@@ -221,25 +182,6 @@ systems."
 
 (define-key evil-normal-state-map (kbd "gn")
   (lambda () (interactive) (find-tag last-tag t)))
-
-;;(defun iterm-focus ()
-;;  (interactive)
-;;  (do-applescript
-;;   " do shell script \"open -a iTerm\"\n"
-;;   ))
-;;
-;;(defun open-dir-in-iterm ()
-;;  "Open the current directory of the buffer in iTerm."
-;;  (interactive)
-;;  (let* ((iterm-app-path "/Applications/iTerm.app"))
-;;    (shell-command (concat "open -a " iterm-app-path " ."))))
-
-;;(general-define-key
-;; :states '(normal visual insert emacs)
-;; :prefix "`"
-;; "t" '(iterm-focus :which-key "focus iterm")
-;; "d" '(open-dir-in-iterm :which-key "open dir in iterm")
-;; )
 
 ;;; esc quits
 (defun minibuffer-keyboard-quit ()
@@ -261,3 +203,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file)
+
+(load-theme 'tango-plus t)
+
